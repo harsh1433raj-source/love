@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valentine Surprise 💖</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{height:100vh;overflow:hidden}
+
+/* PAGE 1 */
+#page1{
+  position:fixed; inset:0;
+  background: radial-gradient(circle at top,#ff5f6d,#ffc371);
+  display:flex; flex-direction:column;
+  justify-content:center; align-items:center;
+  text-align:center; color:#fff; padding:20px;
+  transition:opacity .6s ease, transform .6s ease;
+}
+#page1.hide{
+  opacity:0; transform:scale(1.1); pointer-events:none;
+}
+h1{font-size:clamp(1.8rem,5vw,2.6rem); margin-bottom:25px}
+
+.btns{display:flex; gap:18px; position:relative}
+button{
+  padding:12px 28px; border:none; border-radius:40px;
+  font-size:clamp(1rem,4vw,1.2rem); cursor:pointer;
+}
+#yes{background:#fff;color:#ff3b6f;font-weight:700}
+#no{
+  background:#ff3b6f;color:#fff;
+  position:fixed; left:55vw; top:55vh;
+}
+
+/* Floating emojis */
+.float{
+  position:fixed;
+  font-size:clamp(14px,3vw,20px);
+  opacity:.6;
+  animation:float 9s linear infinite;
+}
+@keyframes float{
+  0%{bottom:-10%;opacity:0}
+  40%{opacity:.7}
+  100%{bottom:110%;opacity:0}
+}
+
+/* PAGE 2 */
+#page2{
+  display:none;
+  position:fixed; inset:0;
+  background: linear-gradient(180deg,#ff7eb3,#ff9acb,#ffd1e8);
+  color:#fff; overflow:hidden;
+}
+#page2.show{display:block}
+
+.message{
+  position:absolute; top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  width:100%; max-width:520px;
+  text-align:center;
+  animation:glow 2s infinite alternate;
+}
+.message p{font-size:clamp(1.4rem,4.8vw,2rem)}
+.message h2{font-size:clamp(1.8rem,5.5vw,2.6rem)}
+
+@keyframes glow{
+  from{text-shadow:0 0 10px #fff}
+  to{text-shadow:0 0 28px #ff3b6f}
+}
+
+/* Mute button */
+#muteBtn{
+  position:fixed;
+  top:15px; right:15px;
+  background:rgba(255,255,255,.25);
+  color:#fff;
+  border:none; border-radius:50%;
+  width:44px; height:44px;
+  font-size:18px;
+}
+
+/* Confetti hearts */
+.confetti{
+  position:fixed;
+  font-size:18px;
+  animation:confetti 3s ease-out forwards;
+}
+@keyframes confetti{
+  0%{transform:translateY(0) scale(1);opacity:1}
+  100%{transform:translateY(100vh) scale(.3);opacity:0}
+}
+</style>
+</head>
+
+<body>
+
+<!-- PAGE 1 -->
+<div id="page1">
+  <h1>Will you be my Valentine? 💖</h1>
+  <div class="btns">
+    <button id="yes">YES ❤️</button>
+    <button id="no">NO 😜</button>
+  </div>
+</div>
+
+<!-- PAGE 2 -->
+<div id="page2">
+  <button id="muteBtn">🔊</button>
+
+  <audio id="bgMusic" loop>
+    <source src="hua_hai_aaj_pehli.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="message">
+    <p>You just filled my life with love 💖✨<br>Happy Valentine’s Day!</p>
+    <h2>I LOVE YOU SO MUCH 🫶</h2>
+  </div>
+</div>
+
+<script>
+// floating emojis
+["💖","🌹","🍫"].forEach(icon=>{
+  for(let i=0;i<14;i++){
+    const f=document.createElement("div");
+    f.className="float";
+    f.textContent=icon;
+    f.style.left=Math.random()*100+"vw";
+    f.style.animationDuration=(7+Math.random()*5)+"s";
+    document.body.appendChild(f);
+  }
+});
+
+// NO button escape
+const noBtn=document.getElementById("no");
+function moveNo(){
+  const bw=noBtn.offsetWidth, bh=noBtn.offsetHeight;
+  const pad=10;
+  const x=Math.random()*(innerWidth-bw-pad*2)+pad;
+  const y=Math.random()*(innerHeight-bh-pad*2)+pad;
+  noBtn.style.left=Math.max(pad,Math.min(x,innerWidth-bw-pad))+"px";
+  noBtn.style.top=Math.max(pad,Math.min(y,innerHeight-bh-pad))+"px";
+}
+noBtn.addEventListener("mouseenter",moveNo);
+noBtn.addEventListener("touchstart",moveNo,{passive:true});
+
+// YES click
+const music=document.getElementById("bgMusic");
+document.getElementById("yes").onclick=()=>{
+  page1.classList.add("hide");
+  setTimeout(()=>{
+    page1.style.display="none";
+    page2.classList.add("show");
+  },500);
+
+  // music fade-in
+  music.volume=0;
+  music.play();
+  let v=0;
+  const fade=setInterval(()=>{
+    v+=0.05; music.volume=Math.min(v,.5);
+    if(v>=.5) clearInterval(fade);
+  },200);
+
+  // confetti hearts
+  for(let i=0;i<25;i++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.textContent="💖";
+    c.style.left=Math.random()*100+"vw";
+    c.style.top="-20px";
+    document.body.appendChild(c);
+  }
+};
+
+// mute toggle
+document.getElementById("muteBtn").onclick=()=>{
+  music.muted=!music.muted;
+  muteBtn.textContent=music.muted?"":"";
+};
+</script>
+
+</body>
+</html>
